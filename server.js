@@ -10,7 +10,14 @@ app.use(express.static('/public/'));
 
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/populatedb", { useNewUrlParser: true });
 
-require('./routes/html-routes.js')(app);
+require('./routes/html-routes.js')(app)
+
+// API routes needed
+
+/*
+"/api/workouts/range" {GET}
+*/
+
 
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`);
