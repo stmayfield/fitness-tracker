@@ -19,6 +19,28 @@ require('./routes/html-routes.js')(app)
 */
 
 
+app.get('/api/workouts', (req, res) => {
+    db.Exercise.find({}, (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.json(data);
+        }
+    })
+})
+
+app.post('/api/workouts', ({ body }, res) => {
+    console.log(body);
+    db.Exercise.create(body, (err, add) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(add);
+        }
+    })
+})
+
+
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`);
 
