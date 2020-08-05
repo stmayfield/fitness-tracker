@@ -8,7 +8,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('/public/'));
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/populatedb", { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", { useNewUrlParser: true });
 
 require('./routes/html-routes.js')(app)
 
@@ -20,7 +20,7 @@ require('./routes/html-routes.js')(app)
 
 
 app.get('/api/workouts', (req, res) => {
-    db.Exercise.find({}, (err, data) => {
+    db.Exercise.findAll({}, (err, data) => {
         if (err) {
             console.log(err);
         } else {
@@ -31,14 +31,67 @@ app.get('/api/workouts', (req, res) => {
 
 app.post('/api/workouts', ({ body }, res) => {
     console.log(body);
-    db.Exercise.create(body, (err, add) => {
+    db.Exercise.insert(body, (err, data) => {
         if (err) {
             console.log(err);
         } else {
-            res.send(add);
+            res.send(data);
         }
     })
 })
+
+app.get('/api/workouts/:id', (req, res) => {
+    db.Exercise.findOne({
+        _id: mongoose.ObjectId(req.params.id)
+    },
+        (err, data) => {
+            if (err) {
+                res.send(err);
+                console.log(err);
+            } else {
+                res.send(data);
+            }
+        }
+    );
+});
+
+app.put('/api/workouts/:id', (req, res) => {
+    db.Exercise.update(
+        {
+            _id: mongoose.ObjectId(req.params.id)
+        },
+        {
+            $set: {
+                header: req.body.headerData,
+                modified: Date.now()
+            }
+        },
+        (err, data) => {
+            if (err) {
+                res.send(err);
+                console.log(err);
+            } else {
+                res.send(data);
+            }
+        }
+    )
+});
+
+app.delete('/api/workouts/:id', (req, res) => {
+    db.Exercise.remove(
+        {
+            _id: mongoose.ObjectId(req.params.id)
+        },
+        (err, data) => {
+            if (err) {
+                res.send(err);
+                console.log(err);
+            } else {
+                res.send(data);
+            }
+        }
+    );
+});
 
 
 app.listen(PORT, () => {
